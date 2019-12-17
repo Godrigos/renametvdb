@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strings"
 )
 
 func main() {
@@ -23,10 +25,17 @@ func main() {
 		if code == 401 {
 			fmt.Println("Not authorized!")
 		} else if code == 404 || len(eps.Data) <= 0 {
-			fmt.Printf("No data on episode %s of \"%s\"!\n", ep, search)
+			fmt.Printf("Series \"%s\" not found or no data on episode"+
+				"\"%s\"!\n", search, ep)
 			countNotFound++
 		} else {
-			newName := fmt.Sprintf("%s S%02dE%02d", search, eps.Data[0].AiredSeason,
+			rName := regexp.MustCompile(`[!?:@|</*\"\\>]`)
+			rSpaces := regexp.MustCompile(`[\s\p{Zs}]{2,}`)
+			newName := rName.ReplaceAllString(search, " ")
+			newName = strings.TrimSpace(newName)
+			newName = rSpaces.ReplaceAllString(newName, " ")
+
+			newName = fmt.Sprintf("%s S%02dE%02d", search, eps.Data[0].AiredSeason,
 				eps.Data[0].AiredEpisodeNumber)
 			ext := filepath.Ext(list[i])
 			err := os.Rename(path+list[i], path+newName+ext)

@@ -10,42 +10,45 @@ import (
 func getEpisodeInfo(serieName, num string) (episodes, int) {
 	var eps episodes
 	serie, code := searchSerie(serieName, "name")
+	var newCode int
+
 	if code == 401 {
 		panic("Not authorized!")
 	} else if code == 404 {
-		fmt.Printf("Series \"%s\" not found.\n", serieName)
+		newCode = 404
+	} else {
+		link := "https://api.thetvdb.com/series/" +
+			fmt.Sprintf("%v", serie.Data[0].ID) +
+			"/episodes/query?absoluteNumber=" + num
+
+		req, err := http.NewRequest("GET", link, nil)
+		if err != nil {
+			panic(err)
+		}
+		req.Header.Set("Accept-Language", "en")
+		req.Header.Set("Authorization", authorization)
+
+		// Execute the request and store the response
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			panic(err)
+		}
+		defer resp.Body.Close()
+
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			panic(err)
+		}
+
+		err = json.Unmarshal(body, &eps)
+		if err != nil {
+			panic(err)
+		}
+		newCode = resp.StatusCode
 	}
 
-	link := "https://api.thetvdb.com/series/" +
-		fmt.Sprintf("%v", serie.Data[0].ID) +
-		"/episodes/query?absoluteNumber=" + num
-
-	req, err := http.NewRequest("GET", link, nil)
-	if err != nil {
-		panic(err)
-	}
-	req.Header.Set("Accept-Language", "en")
-	req.Header.Set("Authorization", authorization)
-
-	// Execute the request and store the response
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
-
-	err = json.Unmarshal(body, &eps)
-	if err != nil {
-		panic(err)
-	}
-
-	return eps, resp.StatusCode
+	return eps, newCode
 }
 
 type episodes struct {
