@@ -24,10 +24,12 @@ func main() {
 
 		if code == 401 {
 			fmt.Println("Not authorized!")
-		} else if code == 404 || len(eps.Data) <= 0 {
-			fmt.Printf("Series \"%s\" not found or no data on episode"+
-				"\"%s\"!\n", search, ep)
+		} else if code == 404 {
+			fmt.Printf("No data on episode \"%s\" of series \"%s\"!\n",
+				ep, search)
 			countNotFound++
+		} else if code == 405 {
+			fmt.Printf("Series \"%s\" not found!\n", search)
 		} else {
 			rName := regexp.MustCompile(`[!?:@|</*\"\\>]`)
 			rSpaces := regexp.MustCompile(`[\s\p{Zs}]{2,}`)

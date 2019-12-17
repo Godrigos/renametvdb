@@ -15,7 +15,7 @@ func getEpisodeInfo(serieName, num string) (episodes, int) {
 	if code == 401 {
 		panic("Not authorized!")
 	} else if code == 404 {
-		newCode = 404
+		newCode = 405
 	} else {
 		link := "https://api.thetvdb.com/series/" +
 			fmt.Sprintf("%v", serie.Data[0].ID) +
