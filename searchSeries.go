@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 func searchSerie(serie, param string) (series, int) {
@@ -20,7 +21,9 @@ func searchSerie(serie, param string) (series, int) {
 	req.Header.Set("Authorization", authorization)
 
 	// Execute the request and store the response
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: 30 * time.Second,
+	}
 	resp, err := client.Do(req)
 	if err != nil {
 		panic(err)
