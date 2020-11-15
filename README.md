@@ -7,3 +7,5 @@ It has a limited number of functions once it is intended to only rename series e
 When using **renametvdb** alway consut the [API Documentation](https://api.thetvdb.com/swagger).
 
 Usage is quite simple. Just execute **renametvdb** in the folder where the files you want renemed are.
+
+**This project will be archived once TVDB API will become a payed service wich I will not pay to, so...**
